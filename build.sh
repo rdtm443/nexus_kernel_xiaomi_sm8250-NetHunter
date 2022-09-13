@@ -8,7 +8,18 @@
 # Specify Kernel Directory
 KERNEL_DIR="$(pwd)"
 
-DEVICE=$1
+BUILD=$1
+
+if [ "$BUILD" = "local" ]; then
+echo "Type ur chat id:"
+read chat
+chat_id=$chat
+echo "Type ur bot token:"
+read token
+token=$token
+fi
+
+DEVICE=$2
 
 if [ "${DEVICE}" = "lmi" ]; then
 DEVICE2=lmi-FW12
