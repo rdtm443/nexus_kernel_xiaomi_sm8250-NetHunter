@@ -11,14 +11,25 @@ KERNEL_DIR="$(pwd)"
 DEVICE=$1
 
 if [ "${DEVICE}" = "lmi" ]; then
-DEVICE2=lmi
+DEVICE2=lmi-FW12
 DEFCONFIG=vendor/lmi_defconfig
 MODEL=Poco F2 Pro
 VERSION=BETA
+curl https://github.com/projects-nexus/nexus_kernel_xiaomi_sm8250/commit/d982f028426863ebcc1c0c247bd855434b4e9826.patch | git am
 elif [ "${DEVICE}" = "alioth" ]; then
 DEVICE2=alioth
 DEFCONFIG=vendor/alioth_defconfig
 MODEL=Poco F3
+VERSION=BETA
+elif [ "${DEVICE}" = "fw13" ]; then
+DEVICE2=lmi-FW13
+DEFCONFIG=vendor/lmi_defconfig
+MODEL=Poco F2 Pro
+VERSION=BETA
+elif [ "${DEVICE}" = "apollo" ]; then
+DEVICE2=apollo
+DEFCONFIG=vendor/apollo_defconfig
+MODEL=Mi 10T Pro
 VERSION=BETA
 fi
 
@@ -41,9 +52,13 @@ TANGGAL=$(date +"%F%S")
 
 # Specify Final Zip Name
 ZIPNAME=Nexus
-FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE}-KERNEL-AOSP-${TANGGAL}.zip
-if [ "${DEVICE}" = "lmi" ]; then
-  FINAL_ZIP2=${ZIPNAME}-${VERSION}-${DEVICE}-KERNEL-MIUI-${TANGGAL}.zip
+if [ "${DEVICE}" = "fw13" ]; then
+  FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE2}-KERNEL-AOSP-${TANGGAL}.zip
+  FINAL_ZIP2=${ZIPNAME}-${VERSION}-lmi-KERNEL-MIUI-${TANGGAL}.zip
+elif [ "${DEVICE}" = "lmi" ]; then
+  FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE2}-KERNEL-AOSP-${TANGGAL}.zip
+else
+  FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE}-KERNEL-AOSP-${TANGGAL}.zip
 fi
 
 ##----------------------------------------------------------##
@@ -52,7 +67,7 @@ LINKER=ld.lld
 
 ##----------------------------------------------------------##
 # Specify compiler [ proton, atomx, eva, aosp ]
-COMPILER=neutron
+COMPILER=zyc14
 
 ##----------------------------------------------------------##
 # Clone ToolChain
@@ -77,6 +92,11 @@ function cloneTC() {
     then
     git clone --depth=1 https://gitlab.com/dakkshesh07/neutron-clang.git clang
     PATH="${KERNEL_DIR}/clang/bin:$PATH"
+
+	elif [ $COMPILER = "zyc14" ];
+    then
+    git clone --depth=1 https://github.com/EmanuelCN/zyc_clang-14 clang
+    PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
 	elif [ $COMPILER = "prelude" ];
 	then
@@ -97,7 +117,7 @@ function cloneTC() {
 	  echo "  Already Cloned Aosp Clang"
 	  echo "××××××××××××××××××××××××××××"
 	else
-	export CLANG_VERSION="clang-r450784e"
+	export CLANG_VERSION="clang-r458507"
 	echo "* It's not cloned, cloning it..."
         mkdir clangB
         cd clangB || exit
@@ -109,19 +129,25 @@ function cloneTC() {
 	fi
 	PATH="${KERNEL_DIR}/clangB/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
 	
-	elif [ $COMPILER = "sdclang" ];
+	elif [ $COMPILER = "zyc" ];
 	then
-        git clone --depth=1 https://github.com/ZyCromerZ/SDClang clangB
-	git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
-	git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git  --depth=1 gcc32
-	PATH="${KERNEL_DIR}/clangB/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
+        mkdir clang
+        cd clang
+		wget -cO --quiet - https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt > version.txt
+		V="$(cat version.txt)"
+        wget https://github.com/ZyCromerZ/Clang/releases/download/16.0.0-$V-release/Clang-16.0.0-$V.tar.gz
+	    tar -xf Clang-16.0.0-$V.tar.gz
+	    cd ..
+	    PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	fi
         # Clone AnyKernel
-        if [ "${DEVICE}" = "lmi" ]; then
-          git clone --depth=1 https://github.com/NotZeetaa/Flashable_Zip_lmi.git AnyKernel3
-        else
+        if [ "${DEVICE}" = "alioth" ]; then
           git clone --depth=1 https://github.com/NotZeetaa/Flashable_Zip_lmi.git -b alioth AnyKernel3
-        fi
+        elif [ "${DEVICE}" = "apollo" ]; then
+          git clone --depth=1 https://github.com/NotZeetaa/Flashable_Zip_lmi.git -b apollo AnyKernel3
+        else
+		  git clone --depth=1 https://github.com/NotZeetaa/Flashable_Zip_lmi.git AnyKernel3
+		fi
 	}
 	
 ##------------------------------------------------------##
@@ -252,16 +278,22 @@ function zipping() {
 	cd AnyKernel3 || exit 1
         zip -r9 ${FINAL_ZIP} *
         MD5CHECK=$(md5sum "$FINAL_ZIP" | cut -d' ' -f1)
-        push "$FINAL_ZIP" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
-        if [ "${DEVICE}" = "alioth" ]; then
-          cd ..
-          rm -rf AnyKernel3
-        else
+		if [ "${DEVICE}" = "fw13" ]; then
+          push "$FINAL_ZIP" "FW 13. Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+		elif [ "${DEVICE}" = "lmi" ]; then
+		  push "$FINAL_ZIP" "FW 12. Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+		else
+		  push "$FINAL_ZIP" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+		fi
+        if [ "${DEVICE}" = "fw13" ]; then
           rm -rf dtbo.img && rm -rf *.zip
           zip -r9 ${FINAL_ZIP2} *
           MD5CHECK=$(md5sum "$FINAL_ZIP2" | cut -d' ' -f1)
-          push "$FINAL_ZIP2" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
+          push "$FINAL_ZIP2" "MIUI 13. Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL (lmi)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
           cd ..
+          rm -rf AnyKernel3
+		else 
+		  cd ..
           rm -rf AnyKernel3
         fi
         }
