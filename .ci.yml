@@ -6,17 +6,14 @@ name : Nexus Lmi FW12
 version: lmi
 steps:
  - name: Nexus Lmi FW12
-   image: panchajanya1999/archlinux:latest
+   image: nexgang/ubuntu:latest
    environment:
      token:
        from_secret: token
      chat_id:
        from_secret: chat_id
    commands:
-     - curl -fsSL "https://pkgbuild.com/~morganamilo/pacman-static/x86_64/bin/pacman-static" -o pacman-static && chmod +x pacman-static && mv pacman-static /usr/bin/
-     - pacman-static -Syu --needed --noconfirm dpkg
-     - wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.0+20160213-1ubuntu1_amd64.deb -O libtinfo5.deb && dpkg-deb -R libtinfo5.deb libtinfo && cp libtinfo/lib/x86_64-linux-gnu/libtinfo.so.5.9 /usr/lib/libtinfo.so.5
-     - bash build.sh lmi
+     - /noclone3 bash build.sh lmi
      
 --- 
 clone: 
@@ -26,17 +23,14 @@ name : Nexus Alioth
 version: alioth
 steps:
  - name: Nexus Alioth
-   image: panchajanya1999/archlinux:latest
+   image: nexgang/ubuntu:latest
    environment:
      token:
        from_secret: token
      chat_id:
        from_secret: chat_id
    commands:
-     - curl -fsSL "https://pkgbuild.com/~morganamilo/pacman-static/x86_64/bin/pacman-static" -o pacman-static && chmod +x pacman-static && mv pacman-static /usr/bin/
-     - pacman-static -Syu --needed --noconfirm dpkg
-     - wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.0+20160213-1ubuntu1_amd64.deb -O libtinfo5.deb && dpkg-deb -R libtinfo5.deb libtinfo && cp libtinfo/lib/x86_64-linux-gnu/libtinfo.so.5.9 /usr/lib/libtinfo.so.5
-     - bash build.sh alioth
+     - /noclone3 bash build.sh alioth
 
 --- 
 clone: 
@@ -46,17 +40,14 @@ name : Nexus Lmi FW13
 version: lmi
 steps:
  - name: Nexus Lmi FW13
-   image: panchajanya1999/archlinux:latest
+   image: nexgang/ubuntu:latest
    environment:
      token:
        from_secret: token
      chat_id:
        from_secret: chat_id
    commands:
-     - curl -fsSL "https://pkgbuild.com/~morganamilo/pacman-static/x86_64/bin/pacman-static" -o pacman-static && chmod +x pacman-static && mv pacman-static /usr/bin/
-     - pacman-static -Syu --needed --noconfirm dpkg git
-     - wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.0+20160213-1ubuntu1_amd64.deb -O libtinfo5.deb && dpkg-deb -R libtinfo5.deb libtinfo && cp libtinfo/lib/x86_64-linux-gnu/libtinfo.so.5.9 /usr/lib/libtinfo.so.5
-     - bash build.sh fw13
+     - /noclone3 bash build.sh fw13
 
 --- 
 clone: 
@@ -66,14 +57,11 @@ name : Nexus Apollo
 version: apollo
 steps:
  - name: Nexus Apollo
-   image: panchajanya1999/archlinux:latest
+   image: nexgang/ubuntu:latest
    environment:
      token:
        from_secret: token
      chat_id:
        from_secret: chat_id
    commands:
-     - curl -fsSL "https://pkgbuild.com/~morganamilo/pacman-static/x86_64/bin/pacman-static" -o pacman-static && chmod +x pacman-static && mv pacman-static /usr/bin/
-     - pacman-static -Syu --needed --noconfirm dpkg
-     - wget http://archive.ubuntu.com/ubuntu/pool/main/n/ncurses/libtinfo5_6.0+20160213-1ubuntu1_amd64.deb -O libtinfo5.deb && dpkg-deb -R libtinfo5.deb libtinfo && cp libtinfo/lib/x86_64-linux-gnu/libtinfo.so.5.9 /usr/lib/libtinfo.so.5
-     - bash build.sh apollo
+     - /noclone3 bash build.sh apollo
