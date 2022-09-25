@@ -47,7 +47,8 @@ fi
 # Files
 IMAGE=$(pwd)/out/arch/arm64/boot/Image
 DTBO=$(pwd)/out/arch/arm64/boot/dtbo.img
-DTB=$(pwd)/out/arch/arm64/boot/dts/vendor/qcom/kona-v2.1.dtb
+OUT_DIR=out/
+dts_source=arch/arm64/boot/dts/vendor/qcom
 
 # Verbose Build
 VERBOSE=0
@@ -144,9 +145,9 @@ function cloneTC() {
 	then
         mkdir clang
         cd clang
-		wget -cO --quiet - https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt > version.txt
-		V="$(cat version.txt)"
-        wget https://github.com/ZyCromerZ/Clang/releases/download/16.0.0-$V-release/Clang-16.0.0-$V.tar.gz
+		wget https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-lastbuild.txt
+		V="$(cat Clang-main-lastbuild.txt)"
+        wget -q https://github.com/ZyCromerZ/Clang/releases/download/16.0.0-$V-release/Clang-16.0.0-$V.tar.gz
 	    tar -xf Clang-16.0.0-$V.tar.gz
 	    cd ..
 	    PATH="${KERNEL_DIR}/clang/bin:$PATH"
@@ -275,6 +276,8 @@ START=$(date +"%s")
 	       exit 1
 	   else
 	       post_msg " Kernel Compilation Finished. Started Zipping "
+		   find ${OUT_DIR}/$dts_source -name '*.dtb' -exec cat {} + >${OUT_DIR}/arch/arm64/boot/dtb
+		   DTB=$(pwd)/out/arch/arm64/boot/dtb
 	fi
 	}
 
@@ -283,7 +286,7 @@ function zipping() {
 	# Copy Files To AnyKernel3 Zip
 	mv $IMAGE AnyKernel3
     mv $DTBO AnyKernel3
-    mv $DTB AnyKernel3/dtb
+    mv $DTB AnyKernel3
 
 	# Zipping and Push Kernel
 	cd AnyKernel3 || exit 1
