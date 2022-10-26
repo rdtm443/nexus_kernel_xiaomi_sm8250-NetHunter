@@ -97,7 +97,12 @@ function cloneTC() {
 	
 	elif [ $COMPILER = "nexus" ];
 	then
-	git clone --depth=1  https://gitlab.com/Project-Nexus/nexus-clang clang
+	git clone --depth=1  https://gitlab.com/Project-Nexus/nexus-clang.git clang
+	PATH="${KERNEL_DIR}/clang/bin:$PATH"
+
+	elif [ $COMPILER = "nex14" ];
+	then
+	git clone --depth=1  https://gitlab.com/Project-Nexus/nexus-clang.git -b nexus-14 clang
 	PATH="${KERNEL_DIR}/clang/bin:$PATH"
 
 	elif [ $COMPILER = "neutron" ];
@@ -115,6 +120,11 @@ function cloneTC() {
 	git clone --depth=1 https://gitlab.com/jjpprrrr/prelude-clang.git clang
 	PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
+	elif [ $COMPILER = "dora" ];
+	then
+	git clone --depth=1 https://gitlab.com/zlatanr/dora-clang-1.git clang
+	PATH="${KERNEL_DIR}/clang/bin:$PATH"
+	
 	elif [ $COMPILER = "eva" ];
 	then
 	git clone --depth=1 https://github.com/mvaisakh/gcc-arm64.git -b gcc-new gcc64
@@ -129,7 +139,7 @@ function cloneTC() {
 	  echo "  Already Cloned Aosp Clang"
 	  echo "××××××××××××××××××××××××××××"
 	else
-	export CLANG_VERSION="clang-r458507"
+	export CLANG_VERSION="clang-r468909b"
 	echo "* It's not cloned, cloning it..."
         mkdir clangB
         cd clangB || exit
