@@ -1,0 +1,2 @@
+ok: unsafe memmove() usage correctly detected with '__read_overflow2_field' in ../lib/test_fortify/read_overflow2_field-memmove.c
+lib/test_fortify/read_overflow2_field-memmove.log.o:                  U __read_overflow2_field

@@ -1,0 +1,2 @@
+ok: unsafe memcmp() usage correctly detected with '__read_overflow2' in ../lib/test_fortify/read_overflow2-memcmp.c
+lib/test_fortify/read_overflow2-memcmp.log.o:                  U __read_overflow2

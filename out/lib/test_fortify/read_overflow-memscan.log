@@ -1,0 +1,2 @@
+ok: unsafe memscan() usage correctly detected with '__read_overflow' in ../lib/test_fortify/read_overflow-memscan.c
+lib/test_fortify/read_overflow-memscan.log.o:                  U __read_overflow

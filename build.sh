@@ -31,6 +31,11 @@ DEVICE2=lmi-FW13
 DEFCONFIG=lmi_defconfig
 MODEL=Poco F2 Pro
 VERSION=BETA
+elif [ "${DEVICE}" = "lmi-nh" ]; then
+DEVICE2=lmi-FW13
+DEFCONFIG=nethunter_defconfig
+MODEL=Poco F2 Pro
+VERSION=BETA-NetHunter
 elif [ "${DEVICE}" = "apollo" ]; then
 DEVICE2=apollo
 DEFCONFIG=apollo_defconfig
@@ -80,7 +85,7 @@ TANGGAL=$(date +"%F%S")
 
 # Specify Final Zip Name
 ZIPNAME=Nexus
-if [ "${DEVICE}" = "lmi" ]; then
+if [ "${DEVICE}" = "lmi" -o "${DEVICE}" = "lmi-nh" ]; then
   FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE2}-RC4.0-KERNEL-AOSP-${TANGGAL}.zip
   FINAL_ZIP2=${ZIPNAME}-${VERSION}-${DEVICE2}-RC4.0-KERNEL-MIUI-${TANGGAL}.zip
 elif [ "${DEVICE}" = "aliothm" ]; then
@@ -387,7 +392,7 @@ function zipping() {
 	cd AnyKernel3 || exit 1
         zip -r9 ${FINAL_ZIP} *
         MD5CHECK=$(md5sum "$FINAL_ZIP" | cut -d' ' -f1)
-		if [ "${DEVICE}" = "lmi" ]; then
+		if [ "${DEVICE}" = "lmi" -o "${DEVICE}" = "lmi-nh" ]; then
           push "$FINAL_ZIP" "FW 13. Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
 		else
         if [ "${DEVICE}" = "aliothm" ]; then
@@ -396,7 +401,7 @@ function zipping() {
 		fi
         push "$FINAL_ZIP" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s) | For <b>$MODEL ($DEVICE)</b> | <b>${KBUILD_COMPILER_STRING}</b> | <b>MD5 Checksum : </b><code>$MD5CHECK</code>"
         fi
-        if [ "${DEVICE}" = "lmi" ]; then
+        if [ "${DEVICE}" = "lmi" -o "${DEVICE}" = "lmi-nh" ]; then
           rm -rf dtbo.img && rm -rf *.zip
           zip -r9 ${FINAL_ZIP2} *
           MD5CHECK=$(md5sum "$FINAL_ZIP2" | cut -d' ' -f1)
